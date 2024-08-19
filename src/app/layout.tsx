@@ -7,6 +7,10 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Image ranking',
+  metadataBase: new URL('https://www.andressrg.com'),
+  alternates: {
+    canonical: '/image-ranking',
+  },
 };
 
 export default function RootLayout({
