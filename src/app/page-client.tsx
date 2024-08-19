@@ -29,7 +29,6 @@ function cosineSimilarity(vecA: number[], vecB: number[]): number {
   let normA = 0;
   let normB = 0;
 
-  // assert vecA.length === vecB.length
   if (vecA.length !== vecB.length) {
     throw new Error('Vectors must have the same length');
   }
@@ -409,7 +408,7 @@ export function PageClient() {
       </div>
 
       <div className="grid grid-cols-5">
-        {imagesSorted.map(({ file, score, scoreRf, scoreFinal }, index) => (
+        {imagesSorted.map(({ file, scoreFinal }, index) => (
           <InView rootMargin="1000px 0px" key={file.name + index}>
             {(inViewArgs) => (
               <div className="aspect-square relative" ref={inViewArgs.ref}>
