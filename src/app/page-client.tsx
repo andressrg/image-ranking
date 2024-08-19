@@ -7,7 +7,6 @@ import { compact, sortBy } from 'lodash';
 import { InView } from 'react-intersection-observer';
 import * as Comlink from 'comlink';
 import pMap from 'p-map';
-import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
 import { cn } from '@/lib/utils';
@@ -120,8 +119,6 @@ function oneOf<T>(arr: T[]): T | undefined {
 }
 
 function useThumbnailImageBase() {
-  const cacheRef = React.useRef(new Map<File, Promise<string>>());
-
   const { data: imageResizers } = useSWRImmutable('imageResizer', async () =>
     Promise.all([
       Comlink.wrap<import('../workers/resizer').Expose>(
@@ -136,12 +133,11 @@ function useThumbnailImageBase() {
     ]),
   );
 
-  return React.useMemo(() => ({ cacheRef, imageResizers }), [imageResizers]);
+  return React.useMemo(() => ({ imageResizers }), [imageResizers]);
 }
 
 function ThumbnailImage({
   file,
-  cacheRef,
   imageResizers,
   ...props
 }: { file: File } & Omit<
@@ -149,30 +145,22 @@ function ThumbnailImage({
   'src' | 'unoptimized'
 > &
   ReturnType<typeof useThumbnailImageBase>) {
-  const imageUrlPromise = React.useMemo(async () => {
-    const imageResizer = oneOf(imageResizers ?? []);
+  const result = useSWRImmutable(
+    { file, imageResizers },
+    async ({ file, imageResizers }) => {
+      const imageResizer = oneOf(imageResizers ?? []);
 
-    if (imageResizer == null) return;
+      if (imageResizer == null) return;
 
-    if (cacheRef.current.has(file) !== true) {
-      cacheRef.current.set(
-        file,
-        (async () => {
-          const objectUrl = URL.createObjectURL(file);
+      const objectUrl = URL.createObjectURL(file);
 
-          try {
-            return await imageResizer.createThumbnail(objectUrl, 1024);
-          } finally {
-            URL.revokeObjectURL(objectUrl);
-          }
-        })(),
-      );
-    }
-
-    return cacheRef.current.get(file);
-  }, [cacheRef, file, imageResizers]);
-
-  const result = useSWR(imageUrlPromise, (p) => p);
+      try {
+        return await imageResizer.createThumbnail(objectUrl, 1024);
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    },
+  );
 
   return (
     <NextImage {...props} src={result.data ?? TRANSPARENT_PIXEL} unoptimized />
