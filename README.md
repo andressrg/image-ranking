@@ -1,5 +1,8 @@
 # Image Ranking App
 
+<img width="894" alt="Screenshot 2024-08-19 at 3 36 45 PM" src="https://github.com/user-attachments/assets/33770fc0-6038-400e-be97-a543f0360229">
+
+
 This is a browser-based app that allows users to rank images according to their preferences. It works entirely locally in the browser.
 
 ## Features
