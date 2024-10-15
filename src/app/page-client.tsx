@@ -486,6 +486,30 @@ export function PageClient() {
             Clear selection
           </Button>
 
+          <Button
+            onClick={() => {
+              const data = JSON.stringify(
+                imagesSorted.map((i) => ({
+                  filename: i.file.name,
+                  score: i.scoreFinal,
+                })),
+              );
+
+              const blob = new Blob([data], { type: 'application/json' });
+
+              const url = URL.createObjectURL(blob);
+
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'ranking.json';
+              a.click();
+            }}
+            size="sm"
+            className="text-xs h-fit py-1 px-2 rounded-full"
+          >
+            Download ranking
+          </Button>
+
           <RadioGroup
             value={sortingMethod}
             className="grid-flow-col"
