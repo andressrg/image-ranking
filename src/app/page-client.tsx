@@ -503,6 +503,10 @@ export function PageClient() {
               a.href = url;
               a.download = 'ranking.json';
               a.click();
+
+              URL.revokeObjectURL(url);
+
+              a.remove();
             }}
             size="sm"
             className="text-xs h-fit py-1 px-2 rounded-full"
